@@ -28,25 +28,45 @@ namespace LinqWithLambdaSolution
                 new Product() { Id = 11, Name= "Level", Price = 70.0, Category = c1 }
             };
 
-            var r1 = products.Where(p => p.Category.Tier == 1 && p.Price < 900);
+            //var r1 = products.Where(p => p.Category.Tier == 1 && p.Price < 900);
+            var r1 = from p in products
+                     where p.Category.Tier == 1 && p.Price < 900.0
+                     select p;
             Print("TIER 1 AND PRICE < 900: ", r1);
 
-            var r2 = products.Where(p => p.Category.Name == "Tools").Select(p => p.Name);
+            var r2 = from p in products
+                     where p.Category.Name == "Tools"
+                     select p.Name;
+            //var r2 = products.Where(p => p.Category.Name == "Tools").Select(p => p.Name);
             Print("NAMES OF PRODUCTS FROM TOOLS: ", r2);
 
-            var r3 = products.Where(p => p.Name[0] == 'C').Select(p => new { p.Name, p.Price, CategoryName = p.Category.Name});
+            var r3 = from p in products
+                     where p.Name[0] == 'C'
+                     select new { p.Name, p.Price, CategoryName = p.Category.Name };
+            //var r3 = products.Where(p => p.Name[0] == 'C').Select(p => new { p.Name, p.Price, CategoryName = p.Category.Name});
             Print("NAMES STARTED WITH 'C' AND ANONYMOUS OBJECT", r3);
 
-            var r4 = products.Where(p => p.Category.Tier == 1).OrderBy(p => p.Price).ThenBy(p => p.Name);
+            var r4 = from p in products
+                     where p.Category.Tier == 1
+                     orderby p.Name
+                     orderby p.Price
+                     select p;
+            //var r4 = products.Where(p => p.Category.Tier == 1).OrderBy(p => p.Price).ThenBy(p => p.Name);
             Print("TIER 1 ORDER BY PRICE THEN BY NAME", r4);
 
-            var r5 = r4.Skip(2).Take(4);
+            var r5 = (from p in r4
+                      select p).Skip(2).Take(4);
+            //var r5 = r4.Skip(2).Take(4);
             Print("TIER 1 ORDER BY PRICE THEN BY NAME SKIP 2 TAKE 4", r5);
 
-            var r6 = products.FirstOrDefault();
+            var r6 = (from p in products select p).FirstOrDefault();
+            //var r6 = products.FirstOrDefault();
             Console.WriteLine("First or default test1: " + r6);
 
-            var r7 = products.Where(p => p.Price > 3000.0).FirstOrDefault();
+            var r7 = (from p in products
+                      where p.Price > 3000.0
+                      select p).FirstOrDefault();
+            //var r7 = products.Where(p => p.Price > 3000.0).FirstOrDefault();
             Console.WriteLine("First or default test2: " + r7);
 
             var r8 = products.Where(p => p.Id == 3).SingleOrDefault();
@@ -75,7 +95,10 @@ namespace LinqWithLambdaSolution
 
             Console.WriteLine();
 
-            var r16 = products.GroupBy(p => p.Category);
+            var r16 = from p in products
+                      group p by p.Category;
+
+            //var r16 = products.GroupBy(p => p.Category);
 
             foreach (IGrouping<Category, Product> group in r16)
             {
